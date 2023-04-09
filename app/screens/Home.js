@@ -21,18 +21,9 @@ function Home() {
 
   useEffect(() => {
     onValue(postRef, (snapshot) => {
-      const posts = [];
+      const posts = []
       snapshot.forEach((childSnapshot) => {
-        const {
-          UserId,
-          ImageUrl,
-          Location,
-          Pincode,
-          Description,
-          Tag,
-          Id,
-          UserName,
-        } = childSnapshot.val();
+        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshot.val();
 
         // const userRef = ref(db, 'users/' + UserId);
         // onValue(userRef, (snapshot) => {
@@ -49,11 +40,12 @@ function Home() {
           Tag: Tag,
           Id: Id,
           Name: UserName,
-        });
-      });
-      setPosts(posts);
+          LikeCount:LikeCount,
+        })
+      })
+      setPosts(posts)
     });
-  }, []);
+  }, [])
 
   const navigation = useNavigation();
   const handleSignOut = () => {
@@ -82,7 +74,10 @@ function Home() {
                 username={item.Name}
                 area={item.Location}
                 pincode={item.Pincode}
+                uid={item.UserId}
                 onPress={() => navigation.navigate("ViewPost", item)}
+                postid={item.Id}
+                likeCount={item.LikeCount}
               />
             )}
             inverted

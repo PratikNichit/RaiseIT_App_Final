@@ -5,12 +5,12 @@ import Screen from "../components/Screen";
 import Post from "../components/Post";
 import { auth, db } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
-import { ref, set, update, onValue, remove } from "firebase/database";
+import { ref, set, update, onValue, remove, orderByChild, orderByValue,query, equalTo } from "firebase/database";
 
 function TrendingPage() {
   const [posts, setPosts] = useState([]);
   const [username, setUserName] = useState("");
-  const postRef = ref(db, "posts/");
+   const postRef = query(ref(db, 'posts/'),orderByChild('LikeCount'));
 
   const getUserData = (uid) => {
     const userRef = ref(db, "users/" + uid);
@@ -22,18 +22,9 @@ function TrendingPage() {
 
   useEffect(() => {
     onValue(postRef, (snapshot) => {
-      const posts = [];
+      const posts = []
       snapshot.forEach((childSnapshot) => {
-        const {
-          UserId,
-          ImageUrl,
-          Location,
-          Pincode,
-          Description,
-          Tag,
-          Id,
-          UserName,
-        } = childSnapshot.val();
+        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshot.val();
 
         // const userRef = ref(db, 'users/' + UserId);
         // onValue(userRef, (snapshot) => {
@@ -50,11 +41,12 @@ function TrendingPage() {
           Tag: Tag,
           Id: Id,
           Name: UserName,
-        });
-      });
-      setPosts(posts);
+          LikeCount:LikeCount,
+        })
+      })
+      setPosts(posts)
     });
-  }, []);
+  }, [])
 
   const navigation = useNavigation();
   const handleSignOut = () => {
@@ -77,14 +69,18 @@ function TrendingPage() {
           <FlatList
             data={posts}
             keyExtractor={(post) => post.Id}
+            inverted={true}
             renderItem={({ item }) => (
-              <Post
+               <Post
                 image={item.ImageUrl}
                 description={item.Description}
                 username={item.Name}
                 area={item.Location}
                 pincode={item.Pincode}
+                uid={item.UserId}
                 onPress={() => navigation.navigate("ViewPost", item)}
+                postid={item.Id}
+                likeCount={item.LikeCount}
               />
             )}
           />

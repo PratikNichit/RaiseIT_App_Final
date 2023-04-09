@@ -83,6 +83,7 @@ function AddPost(props) {
       Description: values.description,
       Tag: values.tag.label,
       Id: Date.now(),
+      LikeCount:"0",
     })
       .then(() => {
         setModalVisible(true);
