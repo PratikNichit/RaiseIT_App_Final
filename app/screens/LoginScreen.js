@@ -6,6 +6,7 @@ import { auth } from "../../firebase";
 
 import Screen from "../components/Screen";
 import { AppForm, AppFormField, AppSubmitButton } from "../components/forms";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const validation = Yup.object().shape({
   username: Yup.string().required().min(8).label("Username"),
@@ -16,6 +17,14 @@ function LoginScreen({ check }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem("keeplogin", "true");
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -35,6 +44,7 @@ function LoginScreen({ check }) {
         console.log("Logged in with:", user.email);
       })
       .catch((error) => alert(error.message));
+    saveData();
   };
 
   return (

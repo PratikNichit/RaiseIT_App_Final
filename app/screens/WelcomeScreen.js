@@ -1,18 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 import Screen from "../components/Screen";
 import AppButton from "../components/AppButton";
 import { getAuth } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function WelcomeScreen({ navigation }) {
   const auth = getAuth();
   const user = auth.currentUser;
+  const [isLogin, setIsLogin] = useState("false");
 
-  if (user) {
-    console.log("present ");
-  } else {
-    console.log("not present");
-  }
+  useEffect(() => {
+    retriveData();
+  });
+
+  const retriveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("keeplogin");
+      console.log(value);
+      if (value !== null) {
+        setIsLogin(value);
+      }
+      if (isLogin == "true") {
+        console.log(isLogin);
+        navigation.replace("Citizen");
+      }
+    } catch (e) {
+      alert("Failed to fetch the input from storage");
+    }
+  };
   return (
     <View style={styles.container}>
       <Screen>

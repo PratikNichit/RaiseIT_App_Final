@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/core";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { ref, set, update, onValue, remove } from "firebase/database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function AccountScreen({ name }) {
   const [userUID, setUID] = useState();
@@ -21,6 +22,14 @@ function AccountScreen({ name }) {
   const [userName, setName] = useState();
   const [postCount, setPostCount] = useState();
   const postRef = ref(db, "posts/");
+
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem("keeplogin", "");
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -44,6 +53,7 @@ function AccountScreen({ name }) {
   const logout = () => {
     // write logout backend code here
     console.log("Logout");
+    saveData();
     handleSignOut();
   };
 
