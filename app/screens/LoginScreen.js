@@ -16,17 +16,42 @@ const validation = Yup.object().shape({
 function LoginScreen({ check }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dispName, setDispName] = useState("");
+
   const navigation = useNavigation();
 
-  const saveData = async () => {
+  const saveData = async (userID) => {
+    let userData = {
+      uid: userID,
+    };
+
     try {
-      await AsyncStorage.setItem("keeplogin", "true");
+      await AsyncStorage.setItem("user", JSON.stringify(userData));
     } catch (error) {
       alert(error);
     }
   };
+  const [userData, setUsetData] = useState({});
+
+
+  const retriveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("user");
+      //console.log(value);
+      if (value !== null) {
+        setUsetData(JSON.parse(value));
+        navigation.replace("Home");
+      }
+      // if (userData.keeplogin == "true") {
+      //   console.log(isLogin);
+      // }
+    } catch (e) {
+      alert("Failed to fetch the input from storage");
+    }
+  };
 
   useEffect(() => {
+    retriveData();
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         navigation.replace("Home");
@@ -42,9 +67,10 @@ function LoginScreen({ check }) {
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Logged in with:", user.email);
+        saveData(user.uid);
+        setDispName(user.displayName);
       })
       .catch((error) => alert(error.message));
-    saveData();
   };
 
   return (

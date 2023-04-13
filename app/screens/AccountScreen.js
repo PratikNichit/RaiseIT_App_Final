@@ -21,16 +21,16 @@ function AccountScreen({ name }) {
   const [userEmail, setEmail] = useState();
   const [userName, setName] = useState();
   const [postCount, setPostCount] = useState();
+  const [userData, setUsetData] = useState({});
   const postRef = ref(db, "posts/");
 
   const saveData = async () => {
     try {
-      await AsyncStorage.setItem("keeplogin", "");
+      await AsyncStorage.setItem("user", "");
     } catch (error) {
       alert(error);
     }
   };
-
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -40,14 +40,14 @@ function AccountScreen({ name }) {
         setUID(uid);
         setEmail(user.email);
         setName(user.displayName);
-        getUserPostCount(uid);
-        //console.log(uid);
         // ...
       } else {
         // User is signed out
         // ...
       }
     });
+    retriveData();
+    getUserPostCount();
   }, []);
 
   const logout = () => {
@@ -57,8 +57,25 @@ function AccountScreen({ name }) {
     handleSignOut();
   };
 
+  const retriveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("user");
+      //console.log(value);
+      if (value !== null) {
+        setUsetData(JSON.parse(value));
+        //getLikePostData();
+        //navigation.replace("Home");
+      }
+      // if (userData.keeplogin == "true") {
+      //   console.log(isLogin);
+      // }
+    } catch (e) {
+      alert("Failed to fetch the input from storage:"+e);
+    }
+  };
+
   var count = 0;
-  const getUserPostCount = (uid) => {
+  const getUserPostCount = () => {
     onValue(postRef, (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         const {
@@ -71,7 +88,7 @@ function AccountScreen({ name }) {
           Id,
           UserName,
         } = childSnapshot.val();
-        if (UserId == uid) {
+        if (UserId == userUID) {
           count++;
         }
       });

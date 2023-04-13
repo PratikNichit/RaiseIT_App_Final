@@ -9,43 +9,27 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { storage, auth, db } from "../../firebase";
 import { set, ref, update, remove,onValue } from "firebase/database";
 import { onAuthStateChanged } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function Post({ image, description, username, onPress, area, postid, uid, likeCount }) {
+function Post({ image, description, username, onPress, area, postid, uid, likeCount,currUserId }) {
   const [liked, setLiked] = useState(false);
   const [userUID,setUID]=useState();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        const uid = user.uid;
-        setUID(uid);
-        //console.log(uid);
-        // ...
-      } else {
-        // User is signed out
-        // ...
-      }
-    });
-    
     const postRef = ref(db, 'posts/' + postid + '/LikedUsers/');
     onValue(postRef, (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         const {LikedUserID} = childSnapshot.val();
-        if(LikedUserID==uid){
+        console.log(currUserId);
+        if(LikedUserID==currUserId){
           setLiked(true);
-        }else{
-          setLiked(false);
         }
       })
     });
-
   }, [])
 
-
   const onLikeClick = () => {
-    setLiked((isLiked) => !isLiked);
+    //setLiked((isLiked) => !isLiked);
     if (!liked) {
       update(ref(db, 'posts/' + postid), {
         LikeCount: Number(likeCount) + 1,
@@ -55,6 +39,7 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
         set(ref(db, 'posts/' + postid + '/LikedUsers/' + userUID), {
           LikedUserID: userUID,
         });
+        setLiked(true);
       }).catch((error) => {
         // The write failed...
         alert(error.message);

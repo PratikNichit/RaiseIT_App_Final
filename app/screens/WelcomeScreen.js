@@ -14,16 +14,19 @@ function WelcomeScreen({ navigation }) {
     retriveData();
   });
 
+  const [userData, setUsetData] = useState({});
+
+
   const retriveData = async () => {
     try {
-      const value = await AsyncStorage.getItem("keeplogin");
-      console.log(value);
+      const value = await AsyncStorage.getItem("user");
+      //console.log(value);
       if (value !== null) {
-        setIsLogin(value);
+        setUsetData(JSON.parse(value));
       }
-      if (isLogin == "true") {
-        console.log(isLogin);
-        navigation.replace("Citizen");
+      if (userData.keeplogin == "true") {
+        //console.log(isLogin);
+        //navigation.replace("Citizen");
       }
     } catch (e) {
       alert("Failed to fetch the input from storage");
