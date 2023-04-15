@@ -40,7 +40,7 @@ function LoginScreen({ check }) {
       //console.log(value);
       if (value !== null) {
         setUsetData(JSON.parse(value));
-        navigation.replace("Home");
+        //navigation.replace("Home");
       }
       // if (userData.keeplogin == "true") {
       //   console.log(isLogin);
