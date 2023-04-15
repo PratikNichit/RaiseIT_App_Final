@@ -33,14 +33,14 @@ function Home() {
     onValue(postRef, (snapshot) => {
       const posts = []
       snapshot.forEach((childSnapshot) => {
-        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshot.val();
+      childSnapshot.forEach((childSnapshottag) => {
+        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshottag.val();
 
         // const userRef = ref(db, 'users/' + UserId);
         // onValue(userRef, (snapshot) => {
         //   const { address, area, email, name, pincode } = snapshot.val();
         //   setUserName(name);
         // });
-
         posts.push({
           UserId: UserId,
           ImageUrl: ImageUrl,
@@ -53,6 +53,7 @@ function Home() {
           LikeCount:LikeCount,
         })
       })
+    })
       setPosts(posts);
     });
   }, []);
@@ -99,6 +100,7 @@ function Home() {
                 postid={item.Id}
                 likeCount={item.LikeCount}
                 currUserId={userUID}
+                tag={item.Tag}
               />
             )}
             inverted

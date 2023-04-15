@@ -11,16 +11,17 @@ import { set, ref, update, remove,onValue } from "firebase/database";
 import { onAuthStateChanged } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function Post({ image, description, username, onPress, area, postid, uid, likeCount,currUserId }) {
+function Post({ image, description, username, onPress, area, postid, uid, likeCount,currUserId,tag }) {
   const [liked, setLiked] = useState(false);
   const [userUID,setUID]=useState();
 
   useEffect(() => {
-    const postRef = ref(db, 'posts/' + postid + '/LikedUsers/');
+    //console.log(currUserId);
+    setUID(currUserId);
+    const postRef = ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/');
     onValue(postRef, (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         const {LikedUserID} = childSnapshot.val();
-        console.log(currUserId);
         if(LikedUserID==currUserId){
           setLiked(true);
         }
@@ -31,12 +32,12 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
   const onLikeClick = () => {
     //setLiked((isLiked) => !isLiked);
     if (!liked) {
-      update(ref(db, 'posts/' + postid), {
+      update(ref(db, 'posts/' +tag+"/"+postid), {
         LikeCount: Number(likeCount) + 1,
       }).then(() => {
         // Data saved successfully!
         //console.log("Liked post");
-        set(ref(db, 'posts/' + postid + '/LikedUsers/' + userUID), {
+        set(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + userUID), {
           LikedUserID: userUID,
         });
         setLiked(true);
@@ -48,11 +49,11 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
     }
     else {
       //console.log("unlike");
-      update(ref(db, 'posts/' + postid), {
+      update(ref(db, 'posts/' +tag+"/"+postid), {
         LikeCount: Number(likeCount) - 1,
       }).then(() => {
         // Data saved successfully!
-        remove(ref(db, 'posts/' + postid + '/LikedUsers/' + userUID));
+        remove(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + userUID));
         setLiked(false);
       }).catch((error) => {
         // The write failed...

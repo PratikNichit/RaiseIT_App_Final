@@ -14,6 +14,7 @@ function TagPostScreen() {
   const [uid,setUID]=useState('');
   const [tag,setTag]=useState('');
   
+  
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -28,7 +29,7 @@ function TagPostScreen() {
     });
     //console.log(tag);
     //getAdminTagData(uid);
-    const postRef = query(ref(db, 'posts/'),orderByChild("Tag"),equalTo(" "+tag));
+    const postRef = query(ref(db, 'posts/'+tag));
     onValue(postRef, (snapshot) => {
       const posts = []
       snapshot.forEach((childSnapshot) => {
@@ -56,7 +57,7 @@ function TagPostScreen() {
     });
   }, []);
 
-  const getTagData = () =>{
+  const getTagData = (uid) =>{
     const adminRef = ref(db, 'admins/' + uid);
     onValue(adminRef, (snapshot) => {
     const {tag} = snapshot.val();
@@ -84,7 +85,7 @@ function TagPostScreen() {
         <View style={styles.scroller}>
           <FlatList
             data={posts}
-            keyExtractor={(post) => post.Id}
+            //keyExtractor={(post) => post.Id}
             renderItem={({ item }) => (
                <Post
                 image={item.ImageUrl}

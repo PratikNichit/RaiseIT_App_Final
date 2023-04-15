@@ -78,6 +78,7 @@ function AccountScreen({ name }) {
   const getUserPostCount = () => {
     onValue(postRef, (snapshot) => {
       snapshot.forEach((childSnapshot) => {
+      childSnapshot.forEach((childSnapshottag) => {
         const {
           UserId,
           ImageUrl,
@@ -87,12 +88,13 @@ function AccountScreen({ name }) {
           Tag,
           Id,
           UserName,
-        } = childSnapshot.val();
+        } = childSnapshottag.val();
         if (UserId == userUID) {
           count++;
         }
       });
     });
+  });
     console.log(count);
     setPostCount(count);
   };

@@ -5,33 +5,42 @@ import Screen from "../components/Screen";
 import Post from "../components/Post";
 import { auth, db } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
-import { ref, set, update, onValue, remove, orderByChild, orderByValue,query, equalTo } from "firebase/database";
+import { ref, set, update, onValue, remove, orderByChild } from "firebase/database";
+import { onAuthStateChanged } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function TrendingPage() {
   const [posts, setPosts] = useState([]);
   const [username, setUserName] = useState("");
-   const postRef = query(ref(db, 'posts/'),orderByChild('LikeCount'));
-
-  const getUserData = (uid) => {
-    const userRef = ref(db, "users/" + uid);
-    onValue(userRef, (snapshot) => {
-      const { address, area, email, name, pincode } = snapshot.val();
-      setUserName(name);
-    });
-  };
-
+  const [userData, setUsetData] = useState({});
+  const [userUID, setUID] = useState();
+  const postRef = ref(db, "posts/",orderByChild("LikeCount"));
+ 
   useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        setUID(uid);
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
+    //retriveData();
     onValue(postRef, (snapshot) => {
       const posts = []
       snapshot.forEach((childSnapshot) => {
-        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshot.val();
+      childSnapshot.forEach((childSnapshottag) => {
+        const { UserId, ImageUrl, Location, Pincode, Description, Tag, Id,UserName,LikeCount } = childSnapshottag.val();
 
         // const userRef = ref(db, 'users/' + UserId);
         // onValue(userRef, (snapshot) => {
         //   const { address, area, email, name, pincode } = snapshot.val();
         //   setUserName(name);
         // });
-
         posts.push({
           UserId: UserId,
           ImageUrl: ImageUrl,
@@ -44,19 +53,30 @@ function TrendingPage() {
           LikeCount:LikeCount,
         })
       })
-      setPosts(posts)
+    })
+      setPosts(posts);
     });
-  }, [])
+  }, []);
+
+  const retriveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("user");
+      //console.log(value);
+      if (value !== null) {
+        setUsetData(JSON.parse(value));
+        //getLikePostData();
+        //navigation.replace("Home");
+      }
+      // if (userData.keeplogin == "true") {
+      //   console.log(isLogin);
+      // }
+    } catch (e) {
+      alert("Failed to fetch the input from storage:"+e);
+    }
+  };
 
   const navigation = useNavigation();
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        navigation.replace("Login");
-      })
-      .catch((error) => alert(error.message));
-  };
+  
   return (
     <Screen>
       <View style={styles.Container}>
@@ -64,14 +84,13 @@ function TrendingPage() {
           <Text style={styles.heading}>𝚁𝚊𝚒𝚜𝚎𝙸𝚃</Text>
         </View>
         <View style={styles.separator}></View>
-
         <View style={styles.scroller}>
           <FlatList
             data={posts}
             keyExtractor={(post) => post.Id}
             inverted={true}
             renderItem={({ item }) => (
-               <Post
+              <Post
                 image={item.ImageUrl}
                 description={item.Description}
                 username={item.Name}
@@ -81,6 +100,8 @@ function TrendingPage() {
                 onPress={() => navigation.navigate("ViewPost", item)}
                 postid={item.Id}
                 likeCount={item.LikeCount}
+                currUserId={userUID}
+                tag={item.Tag}
               />
             )}
           />
@@ -113,7 +134,7 @@ const styles = StyleSheet.create({
   },
 
   Container: {
-    backgroundColor: "#f8f4f4",
+    backgroundColor: "#f8f4f0",
     padding: 10,
   },
 

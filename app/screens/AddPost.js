@@ -34,22 +34,22 @@ const validation = Yup.object().shape({
 });
 
 const categories = [
-  { label: " Water Supply and Pumping Department", value: 1 },
-  { label: " Tree Authority Department", value: 2 },
-  { label: " Solid Waste Management", value: 3 },
-  { label: " Road Department", value: 4 },
-  { label: " Rajiv Gandhi Zoological Park", value: 5 },
-  { label: " Health Department", value: 6 },
-  { label: " Fire Brigade", value: 7 },
-  { label: " Electrical Department", value: 8 },
-  { label: " Drainage Department", value: 9 },
-  { label: " Disaster Management Cell", value: 10 },
-  { label: " Election Department", value: 11 },
-  { label: " Motor Vehicles Department (RTO) ", value: 12 },
-  { label: " Cultural Centres", value: 13 },
-  { label: " Garden Department", value: 14 },
-  { label: " Environment Department", value: 15 },
-  { label: " Social Development Department ", value: 16 },
+  { label: "Water Supply and Pumping Department", value: 1 },
+  { label: "Tree Authority Department", value: 2 },
+  { label: "Solid Waste Management", value: 3 },
+  { label: "Road Department", value: 4 },
+  { label: "Rajiv Gandhi Zoological Park", value: 5 },
+  { label: "Health Department", value: 6 },
+  { label: "Fire Brigade", value: 7 },
+  { label: "Electrical Department", value: 8 },
+  { label: "Drainage Department", value: 9 },
+  { label: "Disaster Management Cell", value: 10 },
+  { label: "Election Department", value: 11 },
+  { label: "Motor Vehicles Department (RTO) ", value: 12 },
+  { label: "Cultural Centres", value: 13 },
+  { label: "Garden Department", value: 14 },
+  { label: "Environment Department", value: 15 },
+  { label: "Social Development Department ", value: 16 },
 ];
 
 function AddPost(props) {
@@ -74,7 +74,7 @@ function AddPost(props) {
   }, []);
 
   const saveData = (imageURL, values) => {
-    set(ref_database(db, "posts/" + Date.now()), {
+    set(ref_database(db, "posts/" +values.tag.label+"/"+Date.now()), {
       UserId: userUID,
       UserName: userName,
       ImageUrl: imageURL,
