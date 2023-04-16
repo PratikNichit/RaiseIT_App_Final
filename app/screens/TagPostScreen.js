@@ -3,16 +3,19 @@ import { View, Text, StyleSheet, FlatList } from "react-native";
 
 import Screen from "../components/Screen";
 import Post from "../components/Post";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
 import { ref, set, update, onValue, remove, orderByChild, orderByValue,query, equalTo } from "firebase/database";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth,onAuthStateChanged } from "firebase/auth";
 
 
 function TagPostScreen() {
   const [posts, setPosts] = useState([]);
   const [uid,setUID]=useState('');
-  const [tag,setTag]=useState('');
+  const [curuid,setcurUID]=useState('');
+
+  //const [tag,setTag]=useState('');
+  const auth = getAuth();
   
   
   useEffect(() => {
@@ -23,12 +26,20 @@ function TagPostScreen() {
         const uid = user.uid;
         //setUID(uid);
         setUID(uid);
+        //setTag(user.displayName);
         getTagData(uid);
         // ...
       }
     });
-    //console.log(tag);
+    console.log("Reg:"+uid);
     //getAdminTagData(uid);
+  }, []);
+
+  const getTagData = (uid) =>{
+    const adminRef = ref(db, 'admins/' + uid);
+    onValue(adminRef, (snapshot) => {
+    const {tag} = snapshot.val();
+    //setTag(tag);
     const postRef = query(ref(db, 'posts/'+tag));
     onValue(postRef, (snapshot) => {
       const posts = []
@@ -55,13 +66,6 @@ function TagPostScreen() {
       })
       setPosts(posts)
     });
-  }, []);
-
-  const getTagData = (uid) =>{
-    const adminRef = ref(db, 'admins/' + uid);
-    onValue(adminRef, (snapshot) => {
-    const {tag} = snapshot.val();
-    setTag(tag);
   });  
   }
 
@@ -97,6 +101,8 @@ function TagPostScreen() {
                 onPress={() => navigation.navigate("ViewPost", item)}
                 postid={item.Id}
                 likeCount={item.LikeCount}
+                currUserId={uid}
+                tag={item.Tag}
               />
             )}
           />

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import * as Yup from "yup";
 import { useState, useEffect } from "react";
-import { storage, auth, db } from "../../firebase";
+import { storage, db } from "../../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { set, ref as ref_database } from "firebase/database";
 
@@ -21,7 +21,7 @@ import {
 import AppImageInput from "../components/forms/AppImageInput";
 import Screen from "../components/Screen";
 import AppAlert from "../components/AppAlert";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth,onAuthStateChanged } from "firebase/auth";
 
 const validation = Yup.object().shape({
   image: Yup.string().required(),
@@ -57,6 +57,7 @@ function AddPost(props) {
   const [uploading, setUploading] = useState(false);
   const [userName, setName] = useState();
   const [modalvisible, setModalVisible] = useState(false);
+  const auth = getAuth();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/core";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
-import { auth } from "../../firebase";
+import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from "firebase/auth";
 
 import Screen from "../components/Screen";
 import { AppForm, AppFormField, AppSubmitButton } from "../components/forms";
@@ -17,6 +17,7 @@ function LoginScreen({ check }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [dispName, setDispName] = useState("");
+  const auth = getAuth();
 
   const navigation = useNavigation();
 
@@ -52,9 +53,10 @@ function LoginScreen({ check }) {
 
   useEffect(() => {
     retriveData();
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged(auth,(user) => {
       if (user) {
         navigation.replace("Home");
+        console.log(user.displayName);
       }
     });
 
@@ -62,8 +64,7 @@ function LoginScreen({ check }) {
   }, []);
 
   const handleLogin = () => {
-    auth
-      .signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth,email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Logged in with:", user.email);

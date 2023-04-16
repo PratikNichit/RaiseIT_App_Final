@@ -9,12 +9,12 @@ import {
 import React from "react";
 import Screen from "../components/Screen";
 import Icon from "../components/Icon";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
 import { useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
 import { ref, set, update, onValue, remove } from "firebase/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth,onAuthStateChanged,signOut } from "firebase/auth";
 
 function AccountScreen({ name }) {
   const [userUID, setUID] = useState();
@@ -23,7 +23,7 @@ function AccountScreen({ name }) {
   const [postCount, setPostCount] = useState();
   const [userData, setUsetData] = useState({});
   const postRef = ref(db, "posts/");
-
+  const auth = getAuth();
   const saveData = async () => {
     try {
       await AsyncStorage.setItem("user", "");
@@ -46,7 +46,7 @@ function AccountScreen({ name }) {
         // ...
       }
     });
-    retriveData();
+   // retriveData();
     getUserPostCount();
   }, []);
 
@@ -55,23 +55,6 @@ function AccountScreen({ name }) {
     console.log("Logout");
     saveData();
     handleSignOut();
-  };
-
-  const retriveData = async () => {
-    try {
-      const value = await AsyncStorage.getItem("user");
-      //console.log(value);
-      if (value !== null) {
-        setUsetData(JSON.parse(value));
-        //getLikePostData();
-        //navigation.replace("Home");
-      }
-      // if (userData.keeplogin == "true") {
-      //   console.log(isLogin);
-      // }
-    } catch (e) {
-      alert("Failed to fetch the input from storage:"+e);
-    }
   };
 
   var count = 0;
@@ -109,8 +92,8 @@ function AccountScreen({ name }) {
   const navigation = useNavigation();
 
   const handleSignOut = () => {
-    auth
-      .signOut()
+    
+      signOut(auth)
       .then(() => {
         navigation.replace("Login");
       })

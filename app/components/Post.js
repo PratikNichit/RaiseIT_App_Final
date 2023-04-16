@@ -17,12 +17,13 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
 
   useEffect(() => {
     //console.log(currUserId);
-    setUID(currUserId);
     const postRef = ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/');
     onValue(postRef, (snapshot) => {
+      console.log(snapshot.key);
       snapshot.forEach((childSnapshot) => {
         const {LikedUserID} = childSnapshot.val();
         if(LikedUserID==currUserId){
+          console.log("condition");
           setLiked(true);
         }
       })
@@ -37,8 +38,8 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
       }).then(() => {
         // Data saved successfully!
         //console.log("Liked post");
-        set(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + userUID), {
-          LikedUserID: userUID,
+        set(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + currUserId), {
+          LikedUserID: currUserId,
         });
         setLiked(true);
       }).catch((error) => {
@@ -53,7 +54,7 @@ function Post({ image, description, username, onPress, area, postid, uid, likeCo
         LikeCount: Number(likeCount) - 1,
       }).then(() => {
         // Data saved successfully!
-        remove(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + userUID));
+        remove(ref(db, 'posts/' +tag+"/"+postid + '/LikedUsers/' + currUserId));
         setLiked(false);
       }).catch((error) => {
         // The write failed...
