@@ -40,6 +40,7 @@ function AccountScreen({ name }) {
         setUID(uid);
         setEmail(user.email);
         setName(user.displayName);
+        getUserPostCount(uid);
         // ...
       } else {
         // User is signed out
@@ -47,32 +48,22 @@ function AccountScreen({ name }) {
       }
     });
    // retriveData();
-    getUserPostCount();
   }, []);
 
   const logout = () => {
     // write logout backend code here
     console.log("Logout");
-    saveData();
+    //saveData();
     handleSignOut();
   };
 
   var count = 0;
-  const getUserPostCount = () => {
+  const getUserPostCount = (UID) => {
     onValue(postRef, (snapshot) => {
       snapshot.forEach((childSnapshot) => {
       childSnapshot.forEach((childSnapshottag) => {
-        const {
-          UserId,
-          ImageUrl,
-          Location,
-          Pincode,
-          Description,
-          Tag,
-          Id,
-          UserName,
-        } = childSnapshottag.val();
-        if (UserId == userUID) {
+        const { UserId } = childSnapshottag.val();
+        if (UserId == UID) {
           count++;
         }
       });

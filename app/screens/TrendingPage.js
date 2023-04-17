@@ -3,19 +3,20 @@ import { View, Text, StyleSheet, FlatList } from "react-native";
 
 import Screen from "../components/Screen";
 import Post from "../components/Post";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
-import { ref, set, update, onValue, remove, orderByChild } from "firebase/database";
-import { onAuthStateChanged } from "firebase/auth";
+import { ref, set, update, onValue, remove } from "firebase/database";
+import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function TrendingPage() {
+function Home() {
   const [posts, setPosts] = useState([]);
   const [username, setUserName] = useState("");
   const [userData, setUsetData] = useState({});
   const [userUID, setUID] = useState();
-  const postRef = ref(db, "posts/",orderByChild("LikeCount"));
- 
+  const postRef = ref(db, "posts/");
+  const auth = getAuth();
+  
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -88,7 +89,6 @@ function TrendingPage() {
           <FlatList
             data={posts}
             keyExtractor={(post) => post.Id}
-            inverted={true}
             renderItem={({ item }) => (
               <Post
                 image={item.ImageUrl}
@@ -104,6 +104,7 @@ function TrendingPage() {
                 tag={item.Tag}
               />
             )}
+            inverted
           />
         </View>
       </View>
@@ -145,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrendingPage;
+export default Home;
